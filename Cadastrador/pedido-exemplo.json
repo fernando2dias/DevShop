@@ -1,0 +1,24 @@
+{
+  "ValorTotal": 0,
+  "Cliente": {
+    "Id": "1",
+    "Nome": "Fernando Dias Motta",
+    "Cpf": "242342342354",
+    "Email": "fernando@gmail.com"
+  },
+  "Pagamento": {
+    "NumeroDoCartao": "234234234234",
+    "Validade": "11/11/2024",
+    "CVV": "333"
+  },
+  "Produtos": [
+    {
+      "Id": "1",
+      "Quantidade": 4
+    },
+    {
+      "Id": "2",
+      "Quantidade": 2
+    }
+  ]
+}
