@@ -12,7 +12,7 @@ namespace Coletor;
 
 public class Function
 {
-    public async void FunctionHandler(DynamoDBEvent dynamoEvent, ILambdaContext context)
+    public async Task FunctionHandler(DynamoDBEvent dynamoEvent, ILambdaContext context)
     {
         //context.Logger.LogInformation($"Beginning to process {dynamoEvent.Records.Count} records...");
 
@@ -30,6 +30,7 @@ public class Function
                 try
                 {
                     await ProcessarValorDoPedido(pedido);
+                    await AmazonUtil.EnviarParaFila(EnumFilasSQS.pedido, pedido);
                     context.Logger.LogLine($"Sucesso na coleta do pedido: {pedido.Id}");
                     //Adicionar na fila pedido
                 }
@@ -38,6 +39,7 @@ public class Function
                     context.Logger.LogLine($"Erro: {e.Message}");
                     pedido.JustificativaDeCancelamento = e.Message;
                     pedido.Cancelado = true;
+                    await AmazonUtil.EnviarParaFila(EnumFilasSNS.falha, pedido);
                     //Adicionar a fila de falha
                 }
 

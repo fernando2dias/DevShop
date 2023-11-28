@@ -14,11 +14,7 @@
   "Produtos": [
     {
       "Id": "1",
-      "Quantidade": 4
-    },
-    {
-      "Id": "2",
-      "Quantidade": 2
+      "Quantidade": 1
     }
   ]
 }
