@@ -12,7 +12,7 @@ namespace Reservador;
 
 public class Function
 {
-    private readonly AmazonDynamoDBClient _client;
+    private AmazonDynamoDBClient _client { get; }
     private readonly string _tableName = "estoque";
 
     public Function()
@@ -53,7 +53,6 @@ public class Function
                 context.Logger.LogInformation($"Erro: {pedido.JustificativaDeCancelamento}");
                 break;
             }
-
         }
         if (pedido.Cancelado)
         {
@@ -75,13 +74,48 @@ public class Function
         }
     }
 
-    private Task DevolverAoEstoque(string id, int quantidade)
+    private async Task BaixarEstoque(string id, int quantidade)
     {
-        throw new NotImplementedException();
+        var request = new UpdateItemRequest
+        {
+            TableName = _tableName,
+            ReturnValues = "NONE",
+            Key = new Dictionary<string, AttributeValue>
+            {
+                {"Id", new AttributeValue{ S = id}}
+            },
+            UpdateExpression = "SET Quantidade = (Quantidade - :quantidadeDoPedido)",
+            ConditionExpression = "Quantidade >= :quantidadeDoPedido",
+            ExpressionAttributeValues = new Dictionary<string, AttributeValue>
+            {
+                { ":quantidadeDoPedido", new AttributeValue
+                    {  N = quantidade.ToString() }
+                }
+            }
+        };
+
+        await _client.UpdateItemAsync(request);
     }
 
-    private Task BaixarEstoque(string id, int quantidade)
+    private async Task DevolverAoEstoque(string id, int quantidade)
     {
-        throw new NotImplementedException();
+        var request = new UpdateItemRequest
+        {
+            TableName = _tableName,
+            ReturnValues = "NONE",
+            Key = new Dictionary<string, AttributeValue>
+            {
+                {"Id", new AttributeValue{ S = id}}
+            },
+            UpdateExpression = "SET Quantidade = (Quantidade + :quantidadeDoPedido)",
+            ExpressionAttributeValues = new Dictionary<string, AttributeValue>
+            {
+                { ":quantidadeDoPedido", new AttributeValue
+                    {  N = quantidade.ToString() }
+                }
+            }
+        };
+
+        await _client.UpdateItemAsync(request);
     }
 }
